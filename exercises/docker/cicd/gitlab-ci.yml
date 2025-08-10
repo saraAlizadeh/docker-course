@@ -1,0 +1,22 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_REGISTRY: docker.io
+  IMAGE_NAME: myusername/myapp
+
+# Build the Docker image
+build:
+  stage: build
+  script:
+    - docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA .
+    - docker push $DOCKER_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA
+
+# Deploy to a server or cloud
+deploy:
+  stage: deploy
+  script:
+    - ssh user@your-server "docker pull $DOCKER_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA && docker run -d $DOCKER_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA"
+  only:
+    - main

@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  web:
+    image: nginx:latest
+    container_name: nginx-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    networks:
+      - webnet
+  
+  db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: examplepassword
+      MYSQL_DATABASE: exampledb
+    ports:
+      - "3306:3306"
+    networks:
+      - webnet
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+networks:
+  webnet:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
