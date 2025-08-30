@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp-deployment
+  labels:
+    app: nodeapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodeapp
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+        - name: nodeapp
+          image: saraalizadeh/simple-app:v1.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: mariadb-service
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-config
+                  key: MARIADB_DATABASE
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: MARIADB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: MARIADB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp-service
+  labels:
+    app: nodeapp
+spec:
+  type: NodePort
+  selector:
+    app: nodeapp
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30080

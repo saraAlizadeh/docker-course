@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+  labels:
+    app: hello
+spec:
+  replicas: 5  # Run one Pod
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+        - name: hello-container
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+  labels:
+    app: hello
+spec:
+  selector:
+    app: hello  # Matches the Deployment's pod label
+  ports:
+    - protocol: TCP
+      port: 80        # Port the Service exposes
+      targetPort: 80  # Container port in the Pod
+  type: ClusterIP      # Works well with Minikube
